@@ -45,10 +45,35 @@ public class VaultPlugin extends JavaPlugin implements Listener {
         String lang = getConfig().getString("language", "en");
         messages = new Messages(this, lang);
 
+        boolean useMySQL = getConfig().getBoolean("storage.use_mysql", false);
+        com.example.vault.storage.Database db = null;
+
         // Create our internal Economy provider and register it in ServicesManager
         SimpleEconomy provider = new SimpleEconomy(this);
-        // Load persisted balances
-        provider.load();
+        if (useMySQL) {
+            try {
+                db = new com.example.vault.storage.Database(this);
+                db.ensureSchema();
+                java.util.Map<java.util.UUID, Double> loaded = db.loadAllBalances();
+                provider.bulkSetBalances(loaded);
+                provider.setDatabase(db);
+                getLogger().info("Loaded " + loaded.size() + " balances from MySQL.");
+            } catch (java.sql.SQLException ex) {
+                getLogger().severe("Failed to initialize MySQL storage: " + ex.getMessage());
+                // Fallback a archivo si falla
+                provider.load();
+            }
+        } else {
+            // Load persisted balances (file)
+            provider.load();
+        }
+
+        // Importar saldos de Essentials según config (una sola vez)
+        if (getConfig().getBoolean("import.essentials.enabled", false)) {
+            boolean replace = getConfig().getBoolean("import.essentials.replace", false);
+            int mode = replace ? 1 : 0; // 0=merge, 1=replace
+            new com.example.vault.importer.EssentialsImportService(this, provider).runOnce(mode);
+        }
         this.economy = provider;
         getServer().getServicesManager().register(Economy.class, provider, this, ServicePriority.Highest);
 
@@ -56,9 +81,10 @@ public class VaultPlugin extends JavaPlugin implements Listener {
         scheduleAutosave(provider);
 
         // Register PlaceholderAPI expansion if plugin is present
-        // if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-        //     new VaultPlaceholderExpansion(this, economy).register();
-        // }
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new com.example.vault.placeholder.VaultPlaceholderExpansion(this, economy).register();
+            getLogger().info("PlaceholderAPI expansion registered.");
+        }
 
         // Register commands using our Economy
         if (getCommand("balance") != null) {
@@ -66,7 +92,7 @@ public class VaultPlugin extends JavaPlugin implements Listener {
         }
         if (getCommand("pay") != null) {
             // After economy initialization
-            ChargeRequestService chargeRequestService = new ChargeRequestService(this, messages);
+            ChargeRequestService chargeRequestService = new ChargeRequestService(this, messages, db);
             getServer().getPluginManager().registerEvents(chargeRequestService, this);
             payMenuService = new PayMenuService(this, economy, messages, chargeRequestService);
             getServer().getPluginManager().registerEvents(payMenuService, this);
@@ -75,6 +101,10 @@ public class VaultPlugin extends JavaPlugin implements Listener {
         }
         if (getCommand("vault") != null) {
             getCommand("vault").setExecutor(new VaultCommand(this, messages));
+        }
+        // Register /eco admin command (give/take)
+        if (getCommand("eco") != null) {
+            getCommand("eco").setExecutor(new com.example.vault.commands.EcoCommand(this, economy, messages));
         }
 
         // Register listener for OP join notifications
@@ -224,12 +254,29 @@ public class VaultPlugin extends JavaPlugin implements Listener {
                         if (isUpdate) {
                             notifyOnlineOps(r);
                             getLogger().info("Update available: remote=" + normalizeVersion(r) + " current=" + normalizeVersion(cur));
-                            if (requester != null) requester.sendMessage(buildUpdateMessage(r));
+                            if (requester != null) {
+                                sendClickableUpdateMessage(requester, buildUpdateMessage(r));
+                            }
                         } else {
                             String norm = normalizeVersion(r);
-                            boolean es = "es".equalsIgnoreCase(getConfig().getString("language", "en"));
-                            String ver = (norm != null && !norm.isEmpty()) ? ("v" + norm) : (es ? "desconocida" : "unknown");
-                            String msg = es ? ("§aEstás en la última versión (" + ver + ").") : ("§aYou are on the latest version (" + ver + ").");
+                            String lang = getConfig().getString("language", "en");
+                            String ver;
+                            if (norm != null && !norm.isEmpty()) {
+                                ver = "v" + norm;
+                            } else {
+                                ver = switch (lang.toLowerCase(java.util.Locale.ROOT)) {
+                                    case "es" -> "desconocida";
+                                    case "fr" -> "inconnue";
+                                    case "de" -> "unbekannt";
+                                    default -> "unknown";
+                                };
+                            }
+                            String msg = switch (lang.toLowerCase(java.util.Locale.ROOT)) {
+                                case "es" -> "§aEstás en la última versión (" + ver + ").";
+                                case "fr" -> "§aVous utilisez la dernière version (" + ver + ").";
+                                case "de" -> "§aDu verwendest die neueste Version (" + ver + ").";
+                                default -> "§aYou are on the latest version (" + ver + ").";
+                            };
                             if (requester != null) requester.sendMessage(msg + " §b" + UPDATE_LINK);
                             getLogger().info("No update: remote=" + normalizeVersion(r) + " current=" + normalizeVersion(cur));
                         }
@@ -269,11 +316,29 @@ public class VaultPlugin extends JavaPlugin implements Listener {
 
     private String buildUpdateMessage(String version) {
         String lang = getConfig().getString("language", "en");
-        boolean es = "es".equalsIgnoreCase(lang);
         String norm = (version != null ? normalizeVersion(version) : null);
-        String ver = (norm != null && !norm.isEmpty()) ? ("v" + norm) : (es ? "desconocida" : "unknown");
-        if (es) {
+        String ver;
+        if (norm != null && !norm.isEmpty()) {
+            ver = "v" + norm;
+        } else {
+            String lname = lang.toLowerCase(java.util.Locale.ROOT);
+            if ("es".equals(lname)) {
+                ver = "desconocida";
+            } else if ("fr".equals(lname)) {
+                ver = "inconnue";
+            } else if ("de".equals(lname)) {
+                ver = "unbekannt";
+            } else {
+                ver = "unknown";
+            }
+        }
+        String lname = lang.toLowerCase(java.util.Locale.ROOT);
+        if ("es".equals(lname)) {
             return "§eHay una nueva actualización de Vault 2.0 (" + ver + ") disponible. §bDescárgala: " + UPDATE_LINK;
+        } else if ("fr".equals(lname)) {
+            return "§eUne nouvelle mise à jour de Vault 2.0 (" + ver + ") est disponible. §bTélécharger : " + UPDATE_LINK;
+        } else if ("de".equals(lname)) {
+            return "§eEin neues Update für Vault 2.0 (" + ver + ") ist verfügbar. §bDownload: " + UPDATE_LINK;
         } else {
             return "§eA new Vault 2.0 update (" + ver + ") is available. §bDownload: " + UPDATE_LINK;
         }
@@ -303,7 +368,7 @@ public class VaultPlugin extends JavaPlugin implements Listener {
         String msg = buildUpdateMessage(newVersion);
         for (Player p : getServer().getOnlinePlayers()) {
             if (p.isOp()) {
-                p.sendMessage(msg);
+                sendClickableUpdateMessage(p, msg);
             }
         }
     }
@@ -322,6 +387,32 @@ public class VaultPlugin extends JavaPlugin implements Listener {
         if ((remoteVersion == null) || (now - lastOnJoinUpdateCheckMs >= ON_JOIN_CHECK_COOLDOWN_MS)) {
             lastOnJoinUpdateCheckMs = now;
             runUpdateCheckAndAnnounce(p);
+        }
+    }
+
+    private void sendClickableUpdateMessage(org.bukkit.command.CommandSender sender, String message) {
+        if (sender instanceof org.bukkit.entity.Player) {
+            org.bukkit.entity.Player p = (org.bukkit.entity.Player) sender;
+            try {
+                net.md_5.bungee.api.chat.TextComponent tc = new net.md_5.bungee.api.chat.TextComponent(message + " " + UPDATE_LINK);
+                tc.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(
+                    net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, UPDATE_LINK));
+                String lang = getConfig().getString("language", "en");
+                String hover = switch (lang.toLowerCase(java.util.Locale.ROOT)) {
+                    case "es" -> "Abrir SpigotMC";
+                    case "fr" -> "Ouvrir SpigotMC";
+                    case "de" -> "SpigotMC öffnen";
+                    default -> "Open SpigotMC";
+                };
+                tc.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(
+                    net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
+                    new net.md_5.bungee.api.chat.ComponentBuilder(hover).create()));
+                p.spigot().sendMessage(tc);
+            } catch (Throwable t) {
+                sender.sendMessage(message + " " + UPDATE_LINK);
+            }
+        } else {
+            sender.sendMessage(message + " " + UPDATE_LINK);
         }
     }
 }
