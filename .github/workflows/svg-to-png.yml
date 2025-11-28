@@ -24,10 +24,8 @@ jobs:
       - name: Convert SVG to PNG
         run: |
           mkdir -p assets
-          # logo: cuadrado 1024x1024 (mantener aspecto y acolchar al centro)
-          rsvg-convert -w 1024 assets/logo.svg > assets/logo_tmp.png
-          convert assets/logo_tmp.png -background none -gravity center -extent 1024x1024 assets/logo.png
-          rm -f assets/logo_tmp.png
+          # logo: ancho 2048x512 (formato banner)
+          rsvg-convert -w 2048 -h 512 assets/logo.svg > assets/logo.png
           # plugins: mantener tamaño existente
           rsvg-convert -w 1200 -h 628 assets/plugins.svg > assets/plugins.png
       - name: Install ImageMagick
@@ -36,6 +34,7 @@ jobs:
           sudo apt-get install -y imagemagick
       - name: Convert PNG to JPG
         run: |
+          # generar JPG ancho desde el PNG
           convert assets/logo.png -background white -alpha remove -quality 92 assets/logo.jpg
           convert assets/plugins.png -background white -alpha remove -quality 92 assets/plugins.jpg
       - name: Commit PNG/JPG if changed
