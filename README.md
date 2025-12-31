@@ -61,10 +61,6 @@ An internal economy provider compatible with the Vault API (no external `Vault.j
   - `%vault_balance_<player>%`
   - `%vault_balance_formatted_<player>%`
 
-## Compatibility Notes
-- Some plugins hard-check for a plugin named exactly `Vault`. Using the name "Vault 2.0" might fail those checks even though the `Economy` service is available. If you need full compatibility with such plugins, keep `name: Vault` and only bump `version: 2.0.0`.
-- This plugin provides economy only (no permissions or chat).
-
 ## LuckPerms
 - Uses Bukkit's standard permissions API, so LuckPerms works out of the box.
 - Default permission nodes:
