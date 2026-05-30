@@ -13,11 +13,11 @@ Vault2.0 is an economy plugin that registers a Bukkit Economy service compatible
 ##What is Vault2.0?
 Vault2.0 is an economy plugin that registers a Bukkit Economy service compatible with the Vault API, allowing other plugins (shops, ranks, etc.) to use money without depending on the original Vault.jar. It includes menus, pay/charge flows, loans, and safe configuration and message reloads
 
-##━━━━━━━━━━IMPORTANT━━━━━━━━━━
+## ━━━━━━━━━━IMPORTANT━━━━━━━━━━
 
 Do NOT run this plugin alongside the original Vault.jar (same plugin name). Remove Vault.jar before starting
 
-##━━━━━━━━━━Features━━━━━━━━━━
+## ━━━━━━━━━━Features━━━━━━━━━━
 
 Internal economy with persistence (file storage; optional MySQL).
 /pay with GUI and per-player submenu (pay, charge, view balance, loans).
