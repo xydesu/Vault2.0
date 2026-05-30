@@ -58,6 +58,8 @@ This system simplifies financial management in the game, offering control and dy
 
 ## Download
 - Latest release: https://github.com/shalom25/Vault2.0/releases/latest
+- Spigot: https://www.spigotmc.org/resources/%E2%AD%90vault-2-0-economy-plugins-1-8-1-21-x-26-1-%E2%9C%85.129605/
+- Modrinth: https://modrinth.com/plugin/vault-2.0-economy-plugins
 
 ## Configuration
 - File: `plugins/Vault 2.0/config.yml` (auto-generated on first start via `saveDefaultConfig()`).
