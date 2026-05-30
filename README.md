@@ -27,19 +27,19 @@ Defaulted effects configurable (slowness/fatigue, etc.) when a loan defaults.
 Safe reload: /vault reload updates config.yml and messages_*.yml without overwriting your values.
 Multi-language: en, es, fr, de, nl, pt, ru, zh_TW, hi.
 
-##━━━━━━━━━━ Installation ━━━━━━━━━━
+## ━━━━━━━━━━ Installation ━━━━━━━━━━
 
 Copy the .jar file to the plugins folder on your server. Start the server to generate the configuration.
 MySQL compatibility: compatibility with MySQL, allowing users to integrate and manage databases more efficiently
 
-##━━━━━━━interactive menu━━━━━━━━
+## ━━━━━━━interactive menu━━━━━━━━
 
-Submenu:
+# Submenu:
 1: pay send money to a player
 2: balance shows the player's money
 3: Charge sends an interactive message to the player with the designated amount (clicking on the message automatically sends the money without using commands).
 
-##━━━━━━━━Loan System━━━━━━━━
+## ━━━━━━━━Loan System━━━━━━━━
 The loan system helps manage the game's finances. Players can apply for loans, manage payments, and view their financial status.
 Request a Loan
 To request a loan, open the menu with `/loan` or `/prestamo` and select **Request**. Specify the amount and, if there are installments, also the amount of each one.
