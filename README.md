@@ -6,26 +6,64 @@
 
 [![CI](https://github.com/shalom25/Vault2.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/shalom25/Vault2.0/actions/workflows/build.yml) [![Release](https://img.shields.io/github/v/release/shalom25/Vault2.0?display_name=tag)](https://github.com/shalom25/Vault2.0/releases/latest) [![Downloads](https://img.shields.io/github/downloads/shalom25/Vault2.0/total)](https://github.com/shalom25/Vault2.0/releases)
 
-An internal economy provider compatible with the Vault API (no external `Vault.jar` required). It registers a Bukkit `Economy` service via the `ServicesManager`.
+What is Vault2.0?
+Vault2.0 is an economy plugin that registers a Bukkit Economy service compatible with the Vault API, allowing other plugins (shops, ranks, etc.) to use money without depending on the original Vault.jar. It includes menus, pay/charge flows, loans, and safe configuration and message reloads`.
+━━━━━━━━━━IMPORTANT━━━━━━━━━━
+Do NOT run this plugin alongside the original Vault.jar (same plugin name). Remove Vault.jar before starting
+
+What is Vault2.0?
+Vault2.0 is an economy plugin that registers a Bukkit Economy service compatible with the Vault API, allowing other plugins (shops, ranks, etc.) to use money without depending on the original Vault.jar. It includes menus, pay/charge flows, loans, and safe configuration and message reloads
+━━━━━━━━━━IMPORTANT━━━━━━━━━━
+Do NOT run this plugin alongside the original Vault.jar (same plugin name). Remove Vault.jar before starting
+If you're using a version earlier than 1.21x, you can download it here
+https://github.com/shalom25/Vault2.0
+━━━━━━━━━━Features━━━━━━━━━━
+Internal economy with persistence (file storage; optional MySQL).
+/pay with GUI and per-player submenu (pay, charge, view balance, loans).
+Loans with GUI wizard (amounts via chat only).
+Defaulted effects configurable (slowness/fatigue, etc.) when a loan defaults.
+/vault main menu (Pay / Loan / Settings / Reload / Update).
+Safe reload: /vault reload updates config.yml and messages_*.yml without overwriting your values.
+Multi-language: en, es, fr, de, nl, pt, ru, zh_TW, hi.
+━━━━━━━━━━ Installation ━━━━━━━━━━
+Copy the .jar file to the plugins folder on your server. Start the server to generate the configuration.
+MySQL compatibility: compatibility with MySQL, allowing users to integrate and manage databases more efficiently
+━━━━━━━interactive menu━━━━━━━━
+Submenu:
+1: pay send money to a player
+2: balance shows the player's money
+3: Charge sends an interactive message to the player with the designated amount (clicking on the message automatically sends the money without using commands).
+
+━━━━━━━━Loan System━━━━━━━━
+The loan system helps manage the game's finances. Players can apply for loans, manage payments, and view their financial status.
+Request a Loan
+To request a loan, open the menu with `/loan` or `/prestamo` and select **Request**. Specify the amount and, if there are installments, also the amount of each one.
+Money Delivery
+Upon confirmation, the money is instantly deposited, and the loan is recorded as "active."
+Automatic Collection
+The system attempts to collect installments automatically. If there's enough balance, it deducts from the balance.
+View Status
+In the menu, the **Status** option shows the outstanding balance and the next payment date.
+Pay Manually
+You can use the **Pay** option to pay part or all of the loan at any time.
+debt
+If there's not enough balance to collect, the loan goes into debt. This can cause negative effects until the debt is settled.
+This system simplifies financial management in the game, offering control and dynamism.
 
 ## Key Changes
 - Plugin name: "Vault 2.0".
-- Final JAR: `target/vault-2.0-v1.4.jar`.
+- Final JAR: `vault2.0-v1.6.2jar`.
 - Internal economy with persistence in `plugins/Vault 2.0/balances.yml` (MySQL optional).
 - PlaceholderAPI integration available (placeholders para balance).
-- Commands: `/balance`, `/pay`, `/eco` (admin) y `/vault reload`.
-
-## Requirements
-- Java 17.
-- Spigot/Paper 1.8.8 (tested). `api-version: 1.13` is used for broad compatibility of plugin metadata.
-
-## Build
-1. From the project folder, run: `mvn -B -U package`
-2. The artifact is produced at: `target/vault-2.0-v1.4.jar`
-
-## Installation
-1. Copy `target/vault-2.0.jar` into your server `plugins/` folder.
-2. Start the server. No official `Vault.jar` or external economy plugin is required.
+- Commands: 
+/vault -> open main menu
+/vault reload -> reload config + messages and add missing sections
+/vault update -> check updates
+/vault resetbalances (confirm) -> clear balance
+/pay -> open player list GUI
+/loan | /prestamo -> open loan GUI
+/balance -> show your balance
+/eco give/take -> admin (OP)`.
 
 ## Download
 - Latest release: https://github.com/shalom25/Vault2.0/releases/latest
