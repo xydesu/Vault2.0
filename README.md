@@ -62,23 +62,23 @@ This system simplifies financial management in the game, offering control and dy
 ## Configuration
 - File: `plugins/Vault 2.0/config.yml` (auto-generated on first start via `saveDefaultConfig()`).
 - Storage:
-  - `storage.use_mysql: false` — por defecto usa `balances.yml`.
-  - MySQL block (comentado en el archivo): `# MySQL storage (set use_mysql: true to enable)`
+  - `storage.use_mysql: false` — uses by default `balances.yml`.
+  - MySQL block (mentioned in the file): `# MySQL storage (set use_mysql: true to enable)`
     - `storage.mysql.host`
     - `storage.mysql.port`
     - `storage.mysql.database`
     - `storage.mysql.username`
     - `storage.mysql.password`
     - `storage.mysql.pool_size`
-- Import Essentials (opcional):
+- Import Essentials (optional):
   - `import.essentials.enabled: false`
-  - `import.essentials.replace: false` (si `true`, reemplaza balances existentes; si `false`, hace merge)
+  - `import.essentials.replace: false` (si `true`, replaces existing balance sheets; if `false`, performs a merge)
 - Offline UUID fallback:
-  - `offline-uuid-fallback` (default `true`). En `online-mode=true` se ignora; en `offline-mode=true` permite operar con nombres no vistos usando UUIDs determinísticos.
+  - `offline-uuid-fallback` (default `true`). in `online-mode=true` is unknown; in `offline-mode=true` allows you to work with unseen names using deterministic UUIDs.
 
 ## PlaceholderAPI
-- Si `PlaceholderAPI` está instalado, la expansión se registra automáticamente.
-- Placeholders disponibles:
+- yes `PlaceholderAPI` Once it is installed, the expansion is automatically registered.
+- Placeholders available:
   - `%vault_balance% / %vault2_balance%`
   - `%vault_balance_formatted%`
   - `%vault_balance_<player>%`
