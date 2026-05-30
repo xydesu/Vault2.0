@@ -8,16 +8,16 @@
 
 What is Vault2.0?
 Vault2.0 is an economy plugin that registers a Bukkit Economy service compatible with the Vault API, allowing other plugins (shops, ranks, etc.) to use money without depending on the original Vault.jar. It includes menus, pay/charge flows, loans, and safe configuration and message reloads`.
-━━━━━━━━━━IMPORTANT━━━━━━━━━━
+
+
+##What is Vault2.0?
+Vault2.0 is an economy plugin that registers a Bukkit Economy service compatible with the Vault API, allowing other plugins (shops, ranks, etc.) to use money without depending on the original Vault.jar. It includes menus, pay/charge flows, loans, and safe configuration and message reloads
+##━━━━━━━━━━IMPORTANT━━━━━━━━━━
+
 Do NOT run this plugin alongside the original Vault.jar (same plugin name). Remove Vault.jar before starting
 
-What is Vault2.0?
-Vault2.0 is an economy plugin that registers a Bukkit Economy service compatible with the Vault API, allowing other plugins (shops, ranks, etc.) to use money without depending on the original Vault.jar. It includes menus, pay/charge flows, loans, and safe configuration and message reloads
-━━━━━━━━━━IMPORTANT━━━━━━━━━━
-Do NOT run this plugin alongside the original Vault.jar (same plugin name). Remove Vault.jar before starting
-If you're using a version earlier than 1.21x, you can download it here
-https://github.com/shalom25/Vault2.0
-━━━━━━━━━━Features━━━━━━━━━━
+##━━━━━━━━━━Features━━━━━━━━━━
+
 Internal economy with persistence (file storage; optional MySQL).
 /pay with GUI and per-player submenu (pay, charge, view balance, loans).
 Loans with GUI wizard (amounts via chat only).
@@ -25,16 +25,20 @@ Defaulted effects configurable (slowness/fatigue, etc.) when a loan defaults.
 /vault main menu (Pay / Loan / Settings / Reload / Update).
 Safe reload: /vault reload updates config.yml and messages_*.yml without overwriting your values.
 Multi-language: en, es, fr, de, nl, pt, ru, zh_TW, hi.
-━━━━━━━━━━ Installation ━━━━━━━━━━
+
+##━━━━━━━━━━ Installation ━━━━━━━━━━
+
 Copy the .jar file to the plugins folder on your server. Start the server to generate the configuration.
 MySQL compatibility: compatibility with MySQL, allowing users to integrate and manage databases more efficiently
-━━━━━━━interactive menu━━━━━━━━
+
+##━━━━━━━interactive menu━━━━━━━━
+
 Submenu:
 1: pay send money to a player
 2: balance shows the player's money
 3: Charge sends an interactive message to the player with the designated amount (clicking on the message automatically sends the money without using commands).
 
-━━━━━━━━Loan System━━━━━━━━
+##━━━━━━━━Loan System━━━━━━━━
 The loan system helps manage the game's finances. Players can apply for loans, manage payments, and view their financial status.
 Request a Loan
 To request a loan, open the menu with `/loan` or `/prestamo` and select **Request**. Specify the amount and, if there are installments, also the amount of each one.
@@ -50,20 +54,6 @@ debt
 If there's not enough balance to collect, the loan goes into debt. This can cause negative effects until the debt is settled.
 This system simplifies financial management in the game, offering control and dynamism.
 
-## Key Changes
-- Plugin name: "Vault 2.0".
-- Final JAR: `vault2.0-v1.6.2jar`.
-- Internal economy with persistence in `plugins/Vault 2.0/balances.yml` (MySQL optional).
-- PlaceholderAPI integration available (placeholders para balance).
-- Commands: 
-/vault -> open main menu
-/vault reload -> reload config + messages and add missing sections
-/vault update -> check updates
-/vault resetbalances (confirm) -> clear balance
-/pay -> open player list GUI
-/loan | /prestamo -> open loan GUI
-/balance -> show your balance
-/eco give/take -> admin (OP)`.
 
 ## Download
 - Latest release: https://github.com/shalom25/Vault2.0/releases/latest
@@ -85,33 +75,17 @@ This system simplifies financial management in the game, offering control and dy
 - Offline UUID fallback:
   - `offline-uuid-fallback` (default `true`). En `online-mode=true` se ignora; en `offline-mode=true` permite operar con nombres no vistos usando UUIDs determinísticos.
 
-## Usage
-- `/balance` — Show your current balance.
-- `/pay <player> <amount>` — Send money to another player.
-- `/eco <give|take> <player> <amount>` — Admin command para ajustar balances.
-- `/vault reload` — Reload configuration and messages. This command is OP-only; it does not use permission nodes.
-
 ## PlaceholderAPI
 - Si `PlaceholderAPI` está instalado, la expansión se registra automáticamente.
 - Placeholders disponibles:
-  - `%vault_balance%`
+  - `%vault_balance% / %vault2_balance%`
   - `%vault_balance_formatted%`
   - `%vault_balance_<player>%`
   - `%vault_balance_formatted_<player>%`
-
-## LuckPerms
-- Uses Bukkit's standard permissions API, so LuckPerms works out of the box.
-- Default permission nodes:
-  - `vault.balance` — use `/balance` (default `op`).
-  - `vault.pay` — use `/pay` and open the pay menu (default `op`).
-  - `vault.pay.bypass_min` — bypass minimum amount (default `op`).
-  - `vault.pay.bypass_max` — bypass maximum amount (default `op`).
-- Command-level `permission` entries were removed from `plugin.yml`; permissions are enforced in code to allow custom i18n denial messages.
-- `/vault reload` is OP-only and does not rely on LuckPerms or permission nodes.
-- Examples with LuckPerms:
-  - `lp group default permission set vault.balance true`
-  - `lp group default permission set vault.pay true`
-  - `lp group vip permission set vault.pay true`
-  - `lp group vip permission set vault.pay.bypass_min true`
-  - `lp group vip permission set vault.pay.bypass_max true`
-- Load order: `softdepend: [LuckPerms]` ensures LuckPerms is ready during startup.
+  - `%vault_eco_balance% / %vault2_eco_balance%`
+  - `%vault_eco_balance_fixed%`
+  - `%vault_eco_balance_commas%`
+  - `%vault_currency_symbol% / %vault2_currency_symbol%`
+  - `%vault_balance_<player>%`
+  - `%vault_top%`
+  - `%vault_top_1%`
