@@ -79,16 +79,20 @@ This system simplifies financial management in the game, offering control and dy
   - `offline-uuid-fallback` (default `true`). in `online-mode=true` is unknown; in `offline-mode=true` allows you to work with unseen names using deterministic UUIDs.
 
 ## PlaceholderAPI
-- yes `PlaceholderAPI` Once it is installed, the expansion is automatically registered.
+- `PlaceholderAPI` Once it is installed, the expansion is automatically registered.
 - Placeholders available:
-  - `%vault_balance% / %vault2_balance%`
-  - `%vault_balance_formatted%`
-  - `%vault_balance_<player>%`
-  - `%vault_balance_formatted_<player>%`
-  - `%vault_eco_balance% / %vault2_eco_balance%`
-  - `%vault_eco_balance_fixed%`
-  - `%vault_eco_balance_commas%`
-  - `%vault_currency_symbol% / %vault2_currency_symbol%`
-  - `%vault_balance_<player>%`
-  - `%vault_top%`
-  - `%vault_top_1%`
+- %vault_balance% - Current player's raw balance.
+- %vault_balance_formatted% - Current player's balance formatted with the plugin's economy format.
+- %vault_eco_balance% - Current player's raw economy balance.
+- %vault_eco_balance_formatted% - Current player's formatted economy balance.
+- %vault_eco_balance_fixed% - Current player's balance with exactly 2 decimal places.
+- %vault_eco_balance_commas% - Current player's balance with comma thousand separators.
+- %vault_eco_balance_short% - Current player's abbreviated balance, such as 1.2k or 3.4m .
+- %vault_currency_symbol% - Currency symbol from the plugin config.
+- %vault_balance_<player>% - Raw balance of the specified player.
+- %vault_balance_formatted_<player>% - Formatted balance of the specified player.
+- %vault_ecobalance<0-8>dp% - Current player's balance with a custom number of decimal places.
+- %vault_top% - Top 10 richest players as a multiline list.
+- %vault_top_<n>% - Full top entry for rank n .
+- %vault_top_name_<n>% - Player name at rank n .
+- %vault_top_amount_<n>% - Formatted balance at rank n .
