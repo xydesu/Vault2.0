@@ -7,4 +7,9 @@ softdepend: [LuckPerms, PlaceholderAPI]
 commands:
   vault:
     description: Admin command for Vault
-    usage: /vault reload
+    usage: /vault reload|update
+    permission: vault.admin
+permissions:
+  vault.admin:
+    description: Allows using /vault reload and update
+    default: op

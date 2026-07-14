@@ -24,7 +24,7 @@ public class VaultCommand implements CommandExecutor {
         }
         String sub = args[0].toLowerCase();
         if ("reload".equals(sub)) {
-            if (sender instanceof Player && !sender.isOp()) {
+            if (!sender.hasPermission("vault.admin")) {
                 sender.sendMessage(messages.chat("cmd.vault.no_permission"));
                 return true;
             }
@@ -34,7 +34,7 @@ public class VaultCommand implements CommandExecutor {
             return true;
         }
         if ("update".equals(sub)) {
-            if (sender instanceof Player && !sender.isOp()) {
+            if (!sender.hasPermission("vault.admin")) {
                 sender.sendMessage(messages.chat("cmd.vault.no_permission"));
                 return true;
             }
