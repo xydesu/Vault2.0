@@ -1,91 +1,24 @@
 # Vault 2.0 — internal economy compatible with the Vault API
-# Provides balance, player-to-player payments, and config/message reload.
-# Commands: /balance, /pay, /vault reload. No external Vault.jar required.
-
-# Message language ('en' or 'es')
-language: en
+# Provides internal economy services and config reload.
+# Commands: /vault reload. No external Vault.jar required.
 
 # Storage configuration
 storage:
   # Autosave interval in seconds (0 disables periodic autosave)
   autosave_seconds: 30
-  # Save on each deposit/withdraw operation
-  save_on_transaction: true
+  
+  # Set to true to use MySQL. If false, balances will be saved locally to balances.yml
+  use_mysql: false
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "minecraft"
+    username: "root"
+    password: ""
+    table_prefix: "vault_"
+    pool_size: 10
+    minimum_idle: 2
 
 # UUID resolution for offline-mode servers
 # true: allow operations with unseen players by generating offline UUIDs
 offline-uuid-fallback: true
-
-# /pay menu configuration
-pay_menu:
-  # Inventory size (multiple of 9)
-  size: 27
-  # Show your own head among players in the main menu
-  show_self: false
-
-# Delivery of pending charge requests on join
-pay_pending:
-  # Maximum requests delivered per login (remaining stay queued)
-  max_on_join: 5
-
-# Amount limits for pay/charge (≤0 disables)
-pay_limits:
-  min: 1.0
-  max: 100000.0
-
-# Documentation (not used by code)
-docs:
-  commands:
-    pay:
-      usage: "/pay <player> <amount> | /pay | /pay <player>"
-      description: "Send money, charge (request payment), and open the menu/player submenu."
-      permission_required: "no"
-      actions: ["Pay", "Charge (request payment)", "View target balance"]
-    balance:
-      usage: "/balance"
-      description: "Show your current balance."
-      permission_required: "no"
-    vault:
-      usage: "/vault reload"
-      description: "Reload configuration and messages (OP only)."
-      permission_required: "op"
-  permissions:
-    notes: "The /pay and /balance commands do not require permissions; these nodes exist for integrations and are granted by default."
-    vault.balance:
-      default: "true"
-      description: "Optional node; granted to everyone by default."
-    vault.pay:
-      default: "true"
-      description: "Optional node; granted to everyone by default."
-    vault.pay.bypass_min:
-      default: "op"
-      description: "Allows ignoring the configured minimum amount."
-    vault.pay.bypass_max:
-      default: "op"
-      description: "Allows ignoring the configured maximum amount."
-    vault.pay.bypass_limits:
-      default: "op"
-      description: "Allows ignoring limits in the chat flow (requests/charges)."
-  guides:
-    pay:
-      summary: "Select Pay in /pay (or player submenu) and type an amount."
-      online_flow: "Money is transferred instantly to the online target."
-      offline_flow: "Direct pay to offline targets is not available; use Charge."
-      chat_commands:
-        cancel: "Type 'cancel' to abort while entering the amount."
-      limits:
-        description: "The configured pay_limits apply; bypass nodes can ignore them."
-    charge:
-      summary: "Select Charge in /pay (or player submenu) and type an amount."
-      online_flow: "The target receives a clickable message to pay."
-      offline_flow: "The request is stored and delivered when the player joins."
-      chat_commands:
-        cancel: "Type 'cancel' to abort while entering the amount."
-      limits:
-        description: "The configured pay_limits apply; 'vault.pay.bypass_limits' can ignore them in chat flow."
-    menu:
-      overview: "Open /pay to list players. Click a player to open the submenu."
-      actions: ["Pay", "Charge", "View balance"]
-      navigation: "Use Previous/Next to move between pages."
-      titles_and_labels: "Menu titles and item names are defined in messages/messages_en.yml and messages/messages_es.yml."
-      config_keys: "Uses pay_menu.size and pay_menu.show_self from config."
