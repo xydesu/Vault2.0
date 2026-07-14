@@ -92,7 +92,7 @@ public class VaultPlugin extends JavaPlugin implements Listener {
         }
         if (getCommand("pay") != null) {
             // After economy initialization
-            ChargeRequestService chargeRequestService = new ChargeRequestService(this, messages, db);
+            ChargeRequestService chargeRequestService = new ChargeRequestService(this, messages);
             getServer().getPluginManager().registerEvents(chargeRequestService, this);
             payMenuService = new PayMenuService(this, economy, messages, chargeRequestService);
             getServer().getPluginManager().registerEvents(payMenuService, this);

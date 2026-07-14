@@ -7,17 +7,78 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 
 import java.text.DecimalFormat;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.configuration.file.YamlConfiguration;
+import com.example.vault.storage.Database;
 
 public class SimpleEconomy implements Economy {
     private final Plugin plugin;
-    private final Map<UUID, Double> balances = new HashMap<>();
+    private final Map<UUID, Double> balances = new ConcurrentHashMap<>();
+    private final Set<UUID> dirtyBalances = ConcurrentHashMap.newKeySet();
+    private Database database;
     private final DecimalFormat formatter = new DecimalFormat("#,##0.00");
 
     public SimpleEconomy(Plugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void setDatabase(Database database) {
+        this.database = database;
+    }
+
+    public void bulkSetBalances(Map<UUID, Double> loaded) {
+        this.balances.putAll(loaded);
+    }
+
+    public void save() throws IOException {
+        if (database != null) {
+            if (!dirtyBalances.isEmpty()) {
+                Map<UUID, Double> batch = new HashMap<>();
+                for (UUID uuid : dirtyBalances) {
+                    batch.put(uuid, balances.getOrDefault(uuid, 0.0));
+                }
+                dirtyBalances.clear();
+                try {
+                    database.saveBalancesBatch(batch);
+                } catch (Exception e) {
+                    plugin.getLogger().severe("Failed to save balances batch: " + e.getMessage());
+                    // Re-add to dirty set if save fails
+                    dirtyBalances.addAll(batch.keySet());
+                }
+            }
+        } else {
+            // Local file save fallback
+            File file = new File(plugin.getDataFolder(), "balances.yml");
+            YamlConfiguration config = new YamlConfiguration();
+            for (Map.Entry<UUID, Double> entry : balances.entrySet()) {
+                config.set(entry.getKey().toString(), entry.getValue());
+            }
+            config.save(file);
+        }
+    }
+
+    public void load() {
+        File file = new File(plugin.getDataFolder(), "balances.yml");
+        if (!file.exists()) return;
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        for (String key : config.getKeys(false)) {
+            try {
+                balances.put(UUID.fromString(key), config.getDouble(key));
+            } catch (Exception ignored) {}
+        }
+    }
+
+    public void close() {
+        if (database != null) {
+            database.close();
+        }
     }
 
     @Override
@@ -72,7 +133,9 @@ public class SimpleEconomy implements Economy {
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer player) {
-        balances.putIfAbsent(player.getUniqueId(), 0.0);
+        if (balances.putIfAbsent(player.getUniqueId(), 0.0) == null) {
+            dirtyBalances.add(player.getUniqueId());
+        }
         return true;
     }
 
@@ -98,6 +161,7 @@ public class SimpleEconomy implements Economy {
             return new EconomyResponse(0.0, bal, ResponseType.FAILURE, "Insufficient funds");
         }
         balances.put(player.getUniqueId(), bal - amount);
+        dirtyBalances.add(player.getUniqueId());
         return new EconomyResponse(amount, bal - amount, ResponseType.SUCCESS, "");
     }
 
@@ -105,6 +169,7 @@ public class SimpleEconomy implements Economy {
     public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
         double bal = getBalance(player);
         balances.put(player.getUniqueId(), bal + amount);
+        dirtyBalances.add(player.getUniqueId());
         return new EconomyResponse(amount, bal + amount, ResponseType.SUCCESS, "");
     }
 
