@@ -15,6 +15,10 @@ commands:
   vault:
     description: Admin command for Vault
     usage: /vault reload
+  eco:
+    description: Admin command to manage player economy
+    usage: /eco <give|take|set> <player> <amount>
+    permission: vault.admin
 permissions:
   vault.balance:
     description: Allows using /balance
