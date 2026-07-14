@@ -1,12 +1,8 @@
 package com.example.vault;
 
-import com.example.vault.commands.BalanceCommand;
-import com.example.vault.commands.PayCommand;
 import com.example.vault.commands.VaultCommand;
 import com.example.vault.economy.SimpleEconomy;
-import com.example.vault.menu.PayMenuService;
 import com.example.vault.i18n.Messages;
-import com.example.vault.menu.ChargeRequestService;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,7 +14,6 @@ import org.bukkit.command.CommandSender;
 
 public class VaultPlugin extends JavaPlugin implements Listener {
     private Economy economy;
-    private PayMenuService payMenuService;
     private Messages messages;
     private org.bukkit.scheduler.BukkitTask autosaveTask;
     private org.bukkit.scheduler.BukkitTask updateCheckTask;
@@ -86,25 +81,8 @@ public class VaultPlugin extends JavaPlugin implements Listener {
             getLogger().info("PlaceholderAPI expansion registered.");
         }
 
-        // Register commands using our Economy
-        if (getCommand("balance") != null) {
-            getCommand("balance").setExecutor(new BalanceCommand(this, economy, messages));
-        }
-        if (getCommand("pay") != null) {
-            // After economy initialization
-            ChargeRequestService chargeRequestService = new ChargeRequestService(this, messages);
-            getServer().getPluginManager().registerEvents(chargeRequestService, this);
-            payMenuService = new PayMenuService(this, economy, messages, chargeRequestService);
-            getServer().getPluginManager().registerEvents(payMenuService, this);
-            // Register commands
-            getCommand("pay").setExecutor(new PayCommand(this, economy, payMenuService, messages));
-        }
         if (getCommand("vault") != null) {
             getCommand("vault").setExecutor(new VaultCommand(this, messages));
-        }
-        // Register /eco admin command (give/take)
-        if (getCommand("eco") != null) {
-            getCommand("eco").setExecutor(new com.example.vault.commands.EcoCommand(this, economy, messages));
         }
 
         // Register listener for OP join notifications
